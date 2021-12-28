@@ -1,45 +1,18 @@
-import logo from './logo.svg';
 import './App.css';
 import Data from './APP용.json';
-import React, {useState, useEffect} from 'react';
+import React, { useState } from 'react';
 
 function App() {
-  // let [db, setDb] = useState(Data);
-  var db = new Array();
+  let [db, setDb] = useState(Data);
   let [box, setBox] = useState(false);
-  var Airtable = require('airtable');
-  var base = new Airtable({apiKey: 'keyJzEKvIACHqssJQ'}).base('appmdn5kLtTSnivLC');
-  
 
-
-  base('APP').select({
-        view: 'Grid view'
-    }).firstPage(function(err, records) {
-        if (err) { console.error(err); return; }
-        // const air = [];
-        // records.forEach(lists => db.push(lists.fields))
-        // console.log(air);
-        // db.push(air);
-        // records.map(lists => db.push(lists.fields))
-        // console.log(records[0].fields);
-
-        // console.log(records.length);
-        for (var i = 0; i < records.length; i++) {
-          db.push(records[i].fields);
-          // db[db.length] = records[i];
-          
-        } return db;
-    });
-    
-    console.log(db.length);
-    
   return (
     <div className="App">
       <div id="search">
-        <input id="email" placeholder='e-mail'></input>
-        <input id="rcNumber" placeholder='password'></input>
+        <input id="email" placeholder="e-mail" />
+        <input id="rcNumber" placeholder="password" />
         <button type="button" className="btn btn-primary btn-sm" id="searchBtn" onClick={() => {setBox(true)}}>Login</button>
-        
+
       </div>
       <p></p>
       <div className="container">
@@ -48,52 +21,57 @@ function App() {
           ? <Box />
           : null
         }
-        
-        </div>
+
+        <div id="err">⚠ 입력하신 정보가 틀렸습니다.</div>
+      </div>
     </div>
   );
-  
- 
 
   function Box(){
-    const pw = document.getElementById("rcNumber").value;
     const em = document.getElementById("email").value;
-    
+    const pw = document.getElementById("rcNumber").value;
+
     let [Link, setLink] = useState(false);
-    
+
     for (var i = 0; i < db.length; i++) {
       
-      if (pw === db[i].외국인등록증 && em === db[i].이메일) {
-        document.getElementById("search").style.display = 'none';
-  
+      if (em === db[i].이메일 && pw === db[i].외국인등록증) {
+        
+        document.getElementById("search").style.display = "none";
+        document.getElementById("err").style.display = "none";
+
         return (
-        <div>
-          <p>{ db[1].이름 }</p>
-          <p>{ db[i].이름 }님, 안녕하세요<br/>
-          이번달 총액은 { db[i].이번달총액.slice(1) }원,<br/>
-          미납금은 { db[i].이번달미납 }원으로<br/>
-          총 납부하실 금액은 <b>{ db[i].이번달총액.slice(1) }원</b>입니다.</p>
-          <button onClick={() => {setLink(true)}}>돈 내세요</button>
+          <div>
+            <div id="box">
+              <p>{ db[i].이름 }님, 안녕하세요🙆‍♀️<br/><br/>
+              이번달 보험료는 { db[i].수수료계좌 !== null ? db[i].수수료계좌 : "0" }원,<br/>
+              미납금은 { db[i].수수료미납계좌 !== null ? db[i].수수료미납계좌 : "0" }원으로<br/>
+              총 납부하실 금액은 <b>{ db[i].수수료계좌총액 !== null ? db[i].수수료계좌총액 : "0" }원</b>입니다.</p>
+            </div>
+            <button className="btn btn-outline-primary" onClick={() => {setLink(true)}}>납부하기</button>
 
-          {
-            Link === true
-            ? <Form />
-            : null
-          }
-
-        </div>
+            {
+              Link === true
+              ? <Form />
+              : null
+            }
+            
+          </div>
         )
-      }
+      } else document.getElementById("err").style.display = "block"
     }
 
     function Form() {
-      window.location.href = `https://${ db[i].납부개별링크 }`;
+      window.location.href = `https://${db[i].납부개별링크}`
     }
 
     return (
-      <div className="row"></div>
+      <div></div>
     )
-  }
-}
 
-export default App;
+  }
+
+  
+
+  
+} export default App
